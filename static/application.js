@@ -104,8 +104,7 @@ var haste = function(appName, options) {
 
 // Set the page title - include the appName
 haste.prototype.setTitle = function(ext) {
-  var title = ext ? this.appName + ' - ' + ext : this.appName;
-  document.title = title;
+  document.title = ext ? this.appName + ' - ' + ext : this.appName;
 };
 
 // Show a message box
@@ -374,7 +373,7 @@ $(function() {
         this.focus();
       }
       // Mozilla and Webkit
-      else if (this.selectionStart || this.selectionStart == '0') {
+      else if (this.selectionStart || this.selectionStart === 0) {
         var startPos = this.selectionStart;
         var endPos = this.selectionEnd;
         var scrollTop = this.scrollTop;
