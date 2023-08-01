@@ -2,6 +2,9 @@
     --color-background-hue: 216;
     --color-background-sat: 27.8%;
     --color-background-lgt: 7.1%;
+
+    --color-menu-background: hsl(var(--color-background-hue), var(--color-background-sat), calc(var(--color-background-lgt) + 3%));
+
     --font-monospace: 'Cascadia Code', Monaco, Menlo, monospace;
     --font-size: 13px;
     --line-height: 1.5;
@@ -19,7 +22,7 @@ body {
 
 main {
     display: flex;
-    height: 100%;
+    min-height: 100%;
 }
 
 /* the line numbers */
@@ -71,6 +74,34 @@ textarea {
 }
 
 /* key */
+@media screen and (max-width: 800px) {
+    body #key {
+        position: fixed;
+        display: flex;
+        background-color: var(--color-menu-background);
+        justify-content: space-between;
+        left: 0;
+    }
+
+    body #box2 {
+        gap: 10px;
+        padding: 0 10px;
+    }
+
+    body #line-numbers,
+    body #box,
+    body textarea {
+        padding: 10px;
+    }
+
+    body #box3 {
+        display: none !important;
+    }
+
+    body main {
+        margin-top: 52px;
+    }
+}
 
 #key {
     position: fixed;
@@ -82,13 +113,14 @@ textarea {
 #box1 {
     padding: 5px;
     text-align: center;
-    background: hsl(var(--color-background-hue), var(--color-background-sat), calc(var(--color-background-lgt) + 3%));
+    background: var(--color-menu-background);
 }
 
 #box2 {
-    background: hsl(var(--color-background-hue), var(--color-background-sat), calc(var(--color-background-lgt) + 6%));
     font-size: 0;
     padding: 0 5px;
+    display: flex;
+    align-items: center;
 }
 
 #box1 a.logo, #box1 a.logo:visited {
