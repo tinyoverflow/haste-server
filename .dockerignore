@@ -1,8 +1,9 @@
+/.git
+/.idea
+/data
+/node_modules
 Dockerfile
-.git
 npm-debug.log
-node_modules
 *.swp
 *.swo
-data
 *.DS_Store
