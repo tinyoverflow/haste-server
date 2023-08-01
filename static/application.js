@@ -255,15 +255,25 @@ haste.prototype.lockDocument = function() {
   });
 };
 
+haste.prototype.shortcutMessage = function (key) {
+    var isMac = navigator.platform.substring(0, 3).toLowerCase() === 'mac';
+
+    if (isMac) {
+        return 'command + ' + key;
+    } else {
+        return 'control + ' + key;
+    }
+};
+
 haste.prototype.configureButtons = function() {
   var _this = this;
   this.buttons = [
     {
       $where: $('#box2 .save'),
       label: 'Save',
-      shortcutDescription: 'control + s',
+      shortcutDescription: _this.shortcutMessage('s'),
       shortcut: function(evt) {
-        return evt.ctrlKey && (evt.keyCode === 83);
+        return (evt.ctrlKey || evt.metaKey) && (evt.keyCode === 83);
       },
       action: function() {
         if (_this.$textarea.val().replace(/^\s+|\s+$/g, '') !== '') {
@@ -275,9 +285,9 @@ haste.prototype.configureButtons = function() {
       $where: $('#box2 .new'),
       label: 'New',
       shortcut: function(evt) {
-        return evt.ctrlKey && evt.keyCode === 78;
+        return (evt.ctrlKey || evt.metaKey) && evt.keyCode === 78;
       },
-      shortcutDescription: 'control + n',
+      shortcutDescription: _this.shortcutMessage('n'),
       action: function() {
         _this.newDocument(!_this.doc.key);
       }
@@ -286,9 +296,9 @@ haste.prototype.configureButtons = function() {
       $where: $('#box2 .duplicate'),
       label: 'Duplicate & Edit',
       shortcut: function(evt) {
-        return _this.doc.locked && evt.ctrlKey && evt.keyCode === 68;
+        return _this.doc.locked && (evt.ctrlKey || evt.metaKey) && evt.keyCode === 68;
       },
-      shortcutDescription: 'control + d',
+      shortcutDescription: _this.shortcutMessage('d'),
       action: function() {
         _this.duplicateDocument();
       }
@@ -297,9 +307,9 @@ haste.prototype.configureButtons = function() {
       $where: $('#box2 .raw'),
       label: 'Just Text',
       shortcut: function(evt) {
-        return evt.ctrlKey && evt.shiftKey && evt.keyCode === 82;
+        return (evt.ctrlKey || evt.metaKey) && evt.shiftKey && evt.keyCode === 82;
       },
-      shortcutDescription: 'control + shift + r',
+      shortcutDescription: _this.shortcutMessage('shift + r'),
       action: function() {
         window.location.href = _this.baseUrl + 'raw/' + _this.doc.key;
       }
