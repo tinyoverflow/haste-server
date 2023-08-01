@@ -310,7 +310,9 @@ haste.prototype.configureButtons = function() {
       },
       shortcutDescription: _this.shortcutMessage('shift + r'),
       action: function() {
-        window.location.href = _this.baseUrl + 'raw/' + _this.doc.key;
+        if (_this.doc.locked) {
+          window.location.href = _this.baseUrl + 'raw/' + _this.doc.key;
+        }
       }
     }
   ];
