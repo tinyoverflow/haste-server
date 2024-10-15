@@ -1,0 +1,88 @@
+version: '3'
+
+services:
+  haste-server:
+    image: ghcr.io/tinyoverflow/haste-server:master
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - STORAGE_TYPE=redis
+      - STORAGE_HOST=redis
+      - STORAGE_PORT=6379
+      - STORAGE_EXPIRE_SECONDS=0
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
+        monitor: 10s
+        failure_action: pause
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 5s
+        window: 120s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.haste-server.rule=Host(`example.com`)
+      - traefik.http.routers.haste-server.entrypoints=websecure
+      - traefik.http.routers.haste-server.tls.certresolver=letsencrypt
+    restart: always
+
+  redis:
+    image: redis:7
+    command: redis-server --save 60 1 --loglevel warning
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 5s
+        window: 120s
+    volumes:
+      - redis-data:/data
+    ports:
+      - 127.0.0.1:6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
+
+  traefik:
+    image: traefik:v2.10
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+        delay: 5s
+        window: 120s
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=hostmaster@example.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+        #- "--log.level=DEBUG"
+        #- "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - letsencrypt-data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: always
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  redis-data:
+  letsencrypt-data:
